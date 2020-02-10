@@ -14,7 +14,7 @@ def extract_indeed_pages():
     pagination = soup.find("div", {"class": "pagination"})
     links = pagination.find_all("a")
     pages = []
-    # Get all these paginations except the last one.
+    # Get all these paginations except the last one (next>>).
     for link in links[0:-1]:
         # Get only strings(texts) inside of link
         pages.append(int(link.string))
@@ -29,19 +29,16 @@ def extract_job(html):
     title = html.find("div", {"class": "title"}).a["title"]
     company = html.find("span", {"class": "company"})
 
-    # Sometimes company is None
+    # Sometimes company can be None
     if company == None:
-        company_anchor = "Unknown Company"
+        company = "Unknown Company"
     else:
         company_anchor = company.find("a")
-
-    # Sometimes <span class="company"> does not have a link <a>
-    if company_anchor == None:  # there is no <a> tag
-        company = str(company.string)
-    elif company_anchor == "Unknown Company":
-        company = company_anchor
-    else:  # there is a <a> tag
-        company = str(company_anchor.string)
+        # Sometimes <span class="company"> does not have a link <a>
+        if company_anchor == None:
+          company = str(company.string)
+        else:
+          company = str(company_anchor.string)
 
     # Remove spaces
     company = company.strip()
@@ -66,11 +63,11 @@ def extract_indeed_jobs(last_page):
         result = requests.get(f"{URL}&start={page*LIMIT}")
         # print(result.status_code)
         soup = BeautifulSoup(result.text, "html.parser")
-        jobs = soup.find_all("div", {"class": "jobsearch-SerpJobCard"})
-        for job in jobs:
+        extracted_info = soup.find_all("div", {"class": "jobsearch-SerpJobCard"})
+        for info in extracted_info:
             # Fix an error - 'dict' object has no attribute 'find' by adding hasattr(job, 'find')
-            if hasattr(job, 'find'):
-                job = extract_job(job)
+            if info != None:
+                job = extract_job(info)
                 jobs.append(job)
             continue
 
