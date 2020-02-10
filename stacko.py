@@ -25,7 +25,7 @@ def extract_job(html):
     # variable 을 멀티로 주면 company = [0], location = [1] 들어감
     company, location = html.h3.find_all("span", recursive=False)
     company = company.get_text(strip=True)
-    location = location.get_text(strip=True)
+    location = location.get_text(strip=True).strip("\r")
     
     print(company, location)
 
