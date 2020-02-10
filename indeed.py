@@ -16,12 +16,13 @@ def extract_indeed_pages():
   pages = []
   # Get all these paginations except the last one.
   for link in links[0:-1]:
-    # Get only strings(texts) inside of link 
-    pages.append(int(link.string))  
-  # Get only the last value which is 20
-  max_pages = pages[-1]
-  
+    # Get only strings(texts) inside of link
+    pages.append(int(link.string))
+    # Get only the last value which is 20
+    max_pages = pages[-1]
+
   return max_pages
+
 
 def extract_indeed_jobs(last_page):
   for page in range(last_page):
@@ -31,6 +32,15 @@ def extract_indeed_jobs(last_page):
     jobs = soup.find_all("div", {"class": "jobsearch-SerpJobCard"})
     for job in jobs:
       # Get information from <a title="">
-      title = job.find("div", {"class": "title"}).a["title"]
-      print(title)
+      title = job.find("div", {"class": "title"}).find("a")["title"]
+      company = job.find("span", {"class": "company"})
+      # Sometimes company does not have a link
+      company_anchor = company.find("a")
+      if company_anchor is not None:
+        company = str(company_anchor.string)
+      else:
+        company = str(company.string)
+      # Remove spaces
+      company = company.strip()
+      print(title, company)
   return jobs
