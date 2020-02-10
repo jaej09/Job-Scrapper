@@ -5,7 +5,7 @@ LIMIT = 50
 URL = f"https://au.indeed.com/jobs?q=(node+or+react)&limit={LIMIT}&radius=50"
 
 
-def extract_indeed_pages():
+def get_last_page():
     result = requests.get(URL)
 
     # BeautifulSoup
@@ -19,9 +19,9 @@ def extract_indeed_pages():
         # Get only strings(texts) inside of link
         pages.append(int(link.string))
         # Get only the last value which is 20
-        max_pages = pages[-1]
+        last_page = pages[-1]
 
-    return max_pages
+    return last_page
 
 
 def extract_job(html):
@@ -57,7 +57,7 @@ def extract_job(html):
     }
 
 
-def extract_indeed_jobs(last_page):
+def extract_jobs(last_page):
     jobs = []
     for page in range(last_page):
         result = requests.get(f"{URL}&start={page*LIMIT}")
@@ -72,3 +72,9 @@ def extract_indeed_jobs(last_page):
             continue
 
     return jobs
+
+
+def get_jobs():
+  last_page = get_last_page()
+  jobs = extract_jobs(last_page)  
+  return jobs
