@@ -26,15 +26,21 @@ def extract_job(html):
     company, location = html.h3.find_all("span", recursive=False)
     company = company.get_text(strip=True)
     location = location.get_text(strip=True).strip("\r")
-    
-    print(company, location)
 
-    return {"title": title, "company": company, "location": location}
+    job_id = html["data-jobid"]
+
+    return {
+        "title": title,
+        "company": company,
+        "location": location,
+        "link": f"https://stackoverflow.com/jobs/{job_id}"
+    }
 
 
 def extract_jobs(last_page):
     jobs = []
     for page in range(last_page):
+        print(f"Scrapping Stacko: Page: {page+1}")
         result = requests.get(f"{URL}&pg={page+1}")
         soup = BeautifulSoup(result.text, "html.parser")
         extracted_info = soup.find_all("div", {"class": "-job"})
@@ -43,10 +49,11 @@ def extract_jobs(last_page):
                 job = extract_job(info)
                 jobs.append(job)
             continue
-        return jobs
+
+    return jobs
 
 
 def get_jobs():
     last_page = get_last_page()
     jobs = extract_jobs(last_page)
-    return []
+    return jobs
