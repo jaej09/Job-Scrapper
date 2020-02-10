@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
+LANGS = ["react", "react native"]
 LIMIT = 50
 URL = f"https://au.indeed.com/jobs?q=(node+or+react)&limit={LIMIT}&radius=50"
 
@@ -36,9 +37,9 @@ def extract_job(html):
         company_anchor = company.find("a")
         # Sometimes <span class="company"> does not have a link <a>
         if company_anchor == None:
-          company = str(company.string)
+            company = str(company.string)
         else:
-          company = str(company_anchor.string)
+            company = str(company_anchor.string)
 
     # Remove spaces
     company = company.strip()
@@ -63,7 +64,8 @@ def extract_jobs(last_page):
         result = requests.get(f"{URL}&start={page*LIMIT}")
         # print(result.status_code)
         soup = BeautifulSoup(result.text, "html.parser")
-        extracted_info = soup.find_all("div", {"class": "jobsearch-SerpJobCard"})
+        extracted_info = soup.find_all("div",
+                                       {"class": "jobsearch-SerpJobCard"})
         for info in extracted_info:
             # Fix an error - 'dict' object has no attribute 'find' by adding hasattr(job, 'find')
             if info != None:
@@ -75,6 +77,6 @@ def extract_jobs(last_page):
 
 
 def get_jobs():
-  last_page = get_last_page()
-  jobs = extract_jobs(last_page)  
-  return jobs
+    last_page = get_last_page()
+    jobs = extract_jobs(last_page)
+    return jobs
