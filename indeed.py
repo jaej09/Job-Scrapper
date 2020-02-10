@@ -27,3 +27,10 @@ def extract_indeed_jobs(last_page):
   for page in range(last_page):
     result = requests.get(f"{URL}&start={page*LIMIT}")
     # print(result.status_code)
+    soup = BeautifulSoup(result.text, "html.parser")
+    jobs = soup.find_all("div", {"class": "jobsearch-SerpJobCard"})
+    for job in jobs:
+      # Get information from <a title="">
+      title = job.find("div", {"class": "title"}).a["title"]
+      print(title)
+  return jobs
